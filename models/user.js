@@ -2,6 +2,8 @@
 // the Model class is what we create our models from 
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
+// node package to perform hashing function
+const bcrypt = require('bcrypt');
 
 // create our User model from the Sequelize constructor
 // So the class inherits the Model functionality
@@ -54,6 +56,52 @@ User.init(
     },
     // The second object configures certain options for the table.
     {
+        // Hashing performs a one-way transformation on a password, 
+        // turning the password into another string, called the hashed password
+        // use an async function that will return a hashed password in a Promise
+        // bcrypt is CPU intensive so we need to allow other functions to run
+        // this method will autogenerate a salt
+        // saltRounds parameter is known as the cost factor and 
+        // controls how many rounds of hashing are done by the bcrypt algorithm
+        // special sequelize functions called hooks (or lifecycle events) that 
+        // are called before or after calls in sequelize
+        // pass in hooks object into the second part of the user.init()
+        // hooks: {
+        //     // set up beforeCreate lifecycle "hook" functionality
+        //     // we need a hook that will fire just before a new instance of user is created
+        //     beforeCreate(userData) {
+        //         // bcrypt.hash(myPlaintextPassword, saltRounds)
+        //         // execute the bcrypt hash function on the   
+        //         // userData object that contains the plaintext password
+        //         // in the password property
+        //         // salt value of 10
+        //         // resulting hashed password is then passed to the Promise object as newUserData
+        //         return bcrypt.hash(userData.password, 10).then(newUserData => {
+        //             // the hashed password is returned 
+        //             return newUserData
+        //         });
+        //     }
+        // },
+
+        // alternate way to handle async functions that will make the code more concise and legible
+        // keyword pair async/await works in tandem
+        // async keyword is used as a prefix to the function that contains the asynchronous function. 
+        hooks: {
+            // set up beforeCreate lifecycle "hook" functionality
+            async beforeCreate(newUserData) {
+                // await can be used to prefix the async function, 
+                // which will then gracefully assign the value from the response to the newUserData's password property. 
+                newUserData.password = await bcrypt.hash(newUserData.password, 10);
+                // The newUserData is then returned to the application with the hashed password.
+                return newUserData;
+            },
+            // set up beforeUpdate lifecycle "hook" functionality prior to an update
+            async beforeUpdate(updatedUserData) {
+                updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+                return updatedUserData;
+            }        
+        },
+
         // TABLE CONFIGURATION OPTIONS GO HERE (https://sequelize.org/v5/manual/models-definition.html#configuration))
 
         // pass in our imported sequelize connection (the direct connection to our database)

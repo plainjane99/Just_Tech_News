@@ -73,6 +73,7 @@ router.put('/:id', (req, res) => {
     // we use sequelize's update method to combine the parameters for creating data and looking up data
     // we pass in req.body to provide new data we want to use in the update
     User.update(req.body, {
+        individualHooks: true,
         where: {
             // req.params.id to indicate where exactly we want that new data to be used
             id: req.params.id
