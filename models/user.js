@@ -7,7 +7,18 @@ const bcrypt = require('bcrypt');
 
 // create our User model from the Sequelize constructor
 // So the class inherits the Model functionality
-class User extends Model {}
+class User extends Model {
+    // instance method that takes in the plaintext password retrieved from the client 
+    // request at req.body.email and compares that with the hashed password
+    // set up method to run on instance data (per user) to check password
+    checkPassword(loginPw) {
+        // Using the keyword this, we can access this user's properties, 
+        // including the password, which was stored as a hashed string
+        // compareSync confirms (true) or denies (false) that the supplied password
+        // matches the hashed password stored on the object
+        return bcrypt.compareSync(loginPw, this.password);
+    }
+}
 
 // initialize the model's data and configuration, passing in two objects as arguments
 // define table columns and configuration
