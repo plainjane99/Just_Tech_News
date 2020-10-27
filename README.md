@@ -1,4 +1,4 @@
-# Just Tech News
+# Module 13 - Object Relational Mapping: Just Tech News
 
 ## Table of Contents
 * [Description](#description)
@@ -9,4 +9,3 @@
 * [License](#license)
 * [Questions](#questions)
 
-Module 13 - Object Relational Mapping
