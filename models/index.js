@@ -1,6 +1,6 @@
 const User = require('./User');
 const Post = require('./Post');
-
+const Vote = require('./Vote');
 // create associations
 // a user can have many posts
 // creates the reference for the id column in the User model 
@@ -16,4 +16,42 @@ Post.belongsTo(User, {
     foreignKey: 'user_id',
 });
 
-module.exports = { User, Post };
+// associate User and Post to one another through the Vote model
+// this is a many-to-many relationship
+// allowing both the User and Post models to query each other's information in the context of a vote
+// see a total of how many votes a user creates
+// and when we query a User, we can see all of the posts they've voted on. 
+User.belongsToMany(Post, {
+    through: Vote,
+    // stipulate that the name of the Vote model should be displayed as voted_posts when queried on, making it a little more informative.
+    as: 'voted_posts',
+    // state what we want the foreign key to be in Vote
+    foreignKey: 'user_id'
+});
+  
+Post.belongsToMany(User, {
+    through: Vote,
+    as: 'voted_posts',
+    foreignKey: 'post_id'
+});
+
+// connecting Vote to User
+Vote.belongsTo(User, {
+    foreignKey: 'user_id'
+});
+
+// see the total number of votes on a post
+// need to connect Vote to Post
+Vote.belongsTo(Post, {
+    foreignKey: 'post_id'
+});
+  
+User.hasMany(Vote, {
+    foreignKey: 'user_id'
+});
+
+Post.hasMany(Vote, {
+    foreignKey: 'post_id'
+});
+
+module.exports = { User, Post, Vote };

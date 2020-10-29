@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { User } = require('../../models');
+// destructure User, Post and Vote from the imported models
+const { User, Post, Vote } = require('../../models');
 
 // GET /api/users (all users)
 router.get('/', (req, res) => {
@@ -23,12 +24,27 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     // sequalize method to pull one item
     User.findOne({
-        // exclude password
-        attributes: { exclude: ['password'] },
         // where option indicates what parameter to bring back
         where: {
-          id: req.params.id
-        }
+            id: req.params.id
+        },
+        // exclude password
+        attributes: { exclude: ['password'] },
+        include: [
+            // include Post model to
+            // receive the title information of every post they've ever voted on
+            {
+                model: Post,
+                attributes: ['id', 'title', 'post_url', 'created_at']
+            },
+            // contextualize it by going through the Vote table
+            {
+                model: Post,
+                attributes: ['title'],
+                through: Vote,
+                as: 'voted_posts'
+            }
+        ]
     })
         .then(dbUserData => {
             // if the search brings back nothing
