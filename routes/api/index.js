@@ -3,9 +3,12 @@
 const router = require('express').Router();
 
 const userRoutes = require('./user-routes.js');
+const postRoutes = require('./post-routes');
 
 // implement 'users' routes to another router instance, 
 // prefixing them with the path /users 
 router.use('/users', userRoutes);
+// exposed with the correct URL path
+router.use('/posts', postRoutes);
 
 module.exports = router;

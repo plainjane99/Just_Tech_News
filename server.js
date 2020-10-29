@@ -18,6 +18,8 @@ app.use(routes);
 // sync" part means that this is Sequelize taking the models and 
 // connecting them to associated database tables
 // force: false prevents the drop and re-create of the database tables at start-up
+// force: true makes the database connection sync with the model definitions and associations
+// and makes the tables re-create if there are any association changes
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () => console.log('Now listening'));
 });
