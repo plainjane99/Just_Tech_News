@@ -1,6 +1,6 @@
 // include packages and models that we'll need to create the Express.js API endpoints
 const router = require('express').Router();
-const { Post, User, Vote } = require('../../models');
+const { Post, User, Vote, Comment } = require('../../models');
 const sequelize = require('../../config/connection');
 
 // create a route that will retrieve all posts in the database
@@ -18,6 +18,16 @@ router.get('/', (req, res) => {
         // an array of objects
         // defined by reference to the model and attributes
         include: [
+            // include the Comment model 
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                // also needs to include the user model so it can attach the username to the comment
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
             {
                 model: User,
                 attributes: ['username']
@@ -46,6 +56,15 @@ router.get('/:id', (req, res) => {
                     [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']],
         // including username which requires a reference to the User model
         include: [
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                // also needs to include the user model so it can attach the username to the comment
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
+            },
             {
                 model: User,
                 attributes: ['username']

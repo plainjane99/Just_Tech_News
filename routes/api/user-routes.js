@@ -1,6 +1,6 @@
 const router = require('express').Router();
 // destructure User, Post and Vote from the imported models
-const { User, Post, Vote } = require('../../models');
+const { User, Post, Vote, Comment } = require('../../models');
 
 // GET /api/users (all users)
 router.get('/', (req, res) => {
@@ -36,6 +36,14 @@ router.get('/:id', (req, res) => {
             {
                 model: Post,
                 attributes: ['id', 'title', 'post_url', 'created_at']
+            },
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'created_at'],
+                include: {
+                    model: Post,
+                    attributes: ['title']
+                }
             },
             // contextualize it by going through the Vote table
             {
