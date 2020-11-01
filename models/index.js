@@ -1,6 +1,6 @@
 const User = require('./user');
 const Post = require('./post');
-const Vote = require('./vote');
+const Vote = require('./Vote');
 const Comment = require('./comment');
 // create associations
 // a user can have many posts
