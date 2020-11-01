@@ -1,7 +1,7 @@
 const User = require('./user');
 const Post = require('./post');
 const Vote = require('./Vote');
-const Comment = require('./comment');
+const Comment = require('./Comment');
 // create associations
 // a user can have many posts
 // creates the reference for the id column in the User model 
