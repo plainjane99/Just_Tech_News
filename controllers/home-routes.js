@@ -4,6 +4,9 @@ const { Post, User, Vote, Comment } = require('../models');
 
 const router = require('express').Router();
 
+// routes need to be created to display information
+
+// this route displays all of the posts
 router.get('/', (req, res) => {
     // render the response and specify which template we want to use
     // In this case, we want to render the homepage.handlebars template 
@@ -24,6 +27,9 @@ router.get('/', (req, res) => {
     //         username: 'test_user'
     //     }
     // });
+
+    // show the session variables
+    console.log(req.session);
 
     Post.findAll({
         attributes: [
@@ -64,6 +70,17 @@ router.get('/', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
+});
+
+// route to display log-in
+router.get('/login', (req, res) => {
+    // check for a session and redirect to the homepage if one exists
+    if (req.session.loggedIn) {
+        res.redirect('/');
+        return;
+    }
+    // log in page doesn't need any variables so we don't need to pass in a second argument
+    res.render('login');
 });
 
 module.exports = router;

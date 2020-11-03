@@ -7,11 +7,31 @@ const sequelize = require('./config/connection');
 const path = require('path');
 // set up handebars.js
 const exphbs = require('express-handlebars');
+// express-session and connect-session-sequelize creates sessions
+// that allow our express.js server to keep track of which user is making a request
+// and store useful data about them in memory
+// library allows us to connect to the back end
+const session = require('express-session');
+// library automatically stores the sessions created by express-session into our database.
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 // sets up handlebars
 const hbs = exphbs.create({});
+// set us sessions and connects the session to our Sequelize database
+const sess = {
+    // secret property holds secret data and stored in .env file
+    secret: 'Super secret secret',
+    // {} tells our session to use cookies
+    // options would be added to the cookie object
+    cookie: {},
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+        db: sequelize
+    })
+};
 
 // sets up handlebars
 app.engine('handlebars', hbs.engine);
@@ -23,6 +43,8 @@ app.use(express.urlencoded({ extended: true }));
 // that can take all of the contents of a folder and serve them as static assets. 
 // This is useful for front-end specific files like images, style sheets, and JavaScript files.
 app.use(express.static(path.join(__dirname, 'public')));
+// set up sessions
+app.use(session(sess));
 
 // this needs to be below all of the express statements
 // turn on routes

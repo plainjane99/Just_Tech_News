@@ -82,7 +82,20 @@ router.post('/', (req, res) => {
         email: req.body.email,
         password: req.body.password
     })
-        .then(dbUserData => res.json(dbUserData))
+        .then(dbUserData => {
+            // gives our server easy access to user's user_id, username, and a boolean of whether user is logged in
+            // We want to make sure the session is created before we send the response back, 
+            // so we're wrapping the variables in a callback. 
+            // The req.session.save() method will initiate the creation of the session and 
+            // then run the callback function once complete
+            req.session.save(() => {
+                req.session.user_id = dbUserData.id;
+                req.session.username = dbUserData.username;
+                req.session.loggedIn = true;
+            
+                res.json(dbUserData);
+            });
+        })
         .catch(err => {
             console.log(err);
             res.status(500).json(err);
@@ -125,9 +138,16 @@ router.post('/login', (req, res) => {
             res.status(400).json({ message: 'Incorrect password!' });
             return;
         }
-        // if there is a match, send message of log in
-        res.json({ user: dbUserData, message: 'You are now logged in!' });
 
+        req.session.save(() => {
+            // declare session variables
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            // if there is a match, send message of log in
+            res.json({ user: dbUserData, message: 'You are now logged in!' });
+        });
     });   
 });
 
@@ -178,6 +198,19 @@ router.delete('/:id', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
+});
+
+// log out route
+router.post('/logout', (req, res) => {
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            // send back 204 status after the session has successfully been destroyed
+            res.status(204).end();
+        });
+    }
+        else {
+        res.status(404).end();
+    }
 });
 
 module.exports = router;
