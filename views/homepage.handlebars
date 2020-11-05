@@ -10,21 +10,10 @@ the expressions will be replaced by the correct data --}}
 
     {{!-- loop helper is required because this code was set up to receive an object with an id property, title property, and so on --}}
     <li>
-        <article class="post">
-            <div class="title">
-                {{!-- each property is now of the post variable we declared --}}
-                <a href="{{post.post_url}}" target="_blank">{{post.title}}</a>
-                <span>({{post.post_url}})</span>
-            </div>
-            <div class="meta">
-                {{!-- handlebar syntax can be used for content --}}
-                {{post.vote_count}} point(s) by {{post.user.username}} on
-                {{post.created_at}}
-                |
-                {{!-- as well as attributes in html --}}
-                <a href="/post/{{post.id}}">{{post.comments.length}} comment(s)</a>
-            </div>
-        </article>
+        {{!-- import the partial from post-info file 
+        import with the > character, followed by the name of the partial file 
+        and the object we'll pass to the partial--}}
+        {{> post-info post }}
     </li>
 
     {{!-- this is the end of the handlebars.js helper --}}

@@ -14,11 +14,14 @@ const exphbs = require('express-handlebars');
 const session = require('express-session');
 // library automatically stores the sessions created by express-session into our database.
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+// import helpers
+const helpers = require('./utils/helpers');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 // sets up handlebars
-const hbs = exphbs.create({});
+// pass helpers through
+const hbs = exphbs.create({ helpers });
 // set us sessions and connects the session to our Sequelize database
 const sess = {
     // secret property holds secret data and stored in .env file

@@ -1,0 +1,17 @@
+<div class="comments">
+    {{!-- in this case we have to use 'this' because 
+    comments array can't be destructured into an easily accessed variable name.
+    in Handlebars.js, we use 'this' to refer to the parent object 
+    or array that's available in the context of the partial --}}
+    {{#each this}}
+    <section class="comment">
+        <div class="meta">
+            {{!-- use helpers in the templates --}}
+            {{user.username}} on {{format_date created_at}}
+        </div>
+        <div class="text">
+            {{comment_text}}
+        </div>
+    </section>
+    {{/each}}
+</div>
