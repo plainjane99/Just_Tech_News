@@ -74,7 +74,7 @@ router.get('/:id', (req, res) => {
 });
 
 // POST /api/users
-router.post('/', withAuth, (req, res) => {
+router.post('/', (req, res) => {
     // we use sequelize's create method to insert data
     // pass in key/value pairs where the keys are what we defined in the User model
     // and the values are what we get from req.body
@@ -154,7 +154,7 @@ router.post('/login', (req, res) => {
 });
 
 // PUT /api/users/1
-router.put('/:id', withAuth, (req, res) => {
+router.put('/:id', (req, res) => {
     // expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
 
     // we use sequelize's update method to combine the parameters for creating data and looking up data
@@ -181,7 +181,7 @@ router.put('/:id', withAuth, (req, res) => {
 });
 
 // DELETE /api/users/1
-router.delete('/:id', withAuth, (req, res) => {
+router.delete('/:id', (req, res) => {
     // sequelize's destory method deletes data
     User.destroy({
         // identifies where we want to delete data from
