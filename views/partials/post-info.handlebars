@@ -1,0 +1,18 @@
+{{!-- partial to minimize the repeated code across templates --}}
+<article class="post">
+    <div class="title">
+        {{!-- each property is now of the post variable we declared --}}
+        <a href="{{post_url}}" target="_blank">{{title}}</a>
+        {{!-- use helpers in the templates --}}
+        <span>({{format_url post_url}})</span>
+    </div>
+    <div class="meta">
+        {{!-- handlebar syntax can be used for content --}}
+        {{vote_count}} {{format_plural "point" vote_count}} by {{user.username}} on
+        {{!-- use helpers in the templates --}}
+        {{format_date created_at}}
+        |
+        {{!-- as well as attributes in html --}}
+        <a href="/post/{{id}}">{{comments.length}} {{format_plural "comment" comments.length}}</a>
+    </div>
+</article>

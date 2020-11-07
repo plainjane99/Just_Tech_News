@@ -1,6 +1,8 @@
 const router = require('express').Router();
 // destructure User, Post and Vote from the imported models
 const { User, Post, Vote, Comment } = require('../../models');
+// import the authguard function
+const withAuth = require('../../utils/auth');
 
 // GET /api/users (all users)
 router.get('/', (req, res) => {
@@ -72,7 +74,7 @@ router.get('/:id', (req, res) => {
 });
 
 // POST /api/users
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // we use sequelize's create method to insert data
     // pass in key/value pairs where the keys are what we defined in the User model
     // and the values are what we get from req.body
@@ -82,7 +84,20 @@ router.post('/', (req, res) => {
         email: req.body.email,
         password: req.body.password
     })
-        .then(dbUserData => res.json(dbUserData))
+        .then(dbUserData => {
+            // gives our server easy access to user's user_id, username, and a boolean of whether user is logged in
+            // We want to make sure the session is created before we send the response back, 
+            // so we're wrapping the variables in a callback. 
+            // The req.session.save() method will initiate the creation of the session and 
+            // then run the callback function once complete
+            req.session.save(() => {
+                req.session.user_id = dbUserData.id;
+                req.session.username = dbUserData.username;
+                req.session.loggedIn = true;
+            
+                res.json(dbUserData);
+            });
+        })
         .catch(err => {
             console.log(err);
             res.status(500).json(err);
@@ -125,14 +140,21 @@ router.post('/login', (req, res) => {
             res.status(400).json({ message: 'Incorrect password!' });
             return;
         }
-        // if there is a match, send message of log in
-        res.json({ user: dbUserData, message: 'You are now logged in!' });
 
+        req.session.save(() => {
+            // declare session variables
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            // if there is a match, send message of log in
+            res.json({ user: dbUserData, message: 'You are now logged in!' });
+        });
     });   
 });
 
 // PUT /api/users/1
-router.put('/:id', (req, res) => {
+router.put('/:id', withAuth, (req, res) => {
     // expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
 
     // we use sequelize's update method to combine the parameters for creating data and looking up data
@@ -159,7 +181,7 @@ router.put('/:id', (req, res) => {
 });
 
 // DELETE /api/users/1
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     // sequelize's destory method deletes data
     User.destroy({
         // identifies where we want to delete data from
@@ -178,6 +200,19 @@ router.delete('/:id', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
+});
+
+// log out route
+router.post('/logout', (req, res) => {
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            // send back 204 status after the session has successfully been destroyed
+            res.status(204).end();
+        });
+    }
+        else {
+        res.status(404).end();
+    }
 });
 
 module.exports = router;

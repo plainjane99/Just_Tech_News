@@ -1,0 +1,22 @@
+{{!-- When the template is rendered and sent to the client, 
+the expressions will be replaced by the correct data --}}
+
+<ol class="post-list">
+    {{!-- #each is a handlebars.js built-in helper that will allow you to 
+    perform minimal logic like looping over an array. 
+    Any HTML code in between the #each /each will be repeated for every item in posts 
+    and declaring a variable name for the subsequent placeholders --}}
+    {{#each posts as |post|}}
+
+    {{!-- loop helper is required because this code was set up to receive an object with an id property, title property, and so on --}}
+    <li>
+        {{!-- import the partial from post-info file 
+        import with the > character, followed by the name of the partial file 
+        and the object we'll pass to the partial--}}
+        {{> post-info post }}
+    </li>
+
+    {{!-- this is the end of the handlebars.js helper --}}
+    {{/each}}
+
+</ol>
