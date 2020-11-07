@@ -1,5 +1,8 @@
 const router = require('express').Router();
 const { Comment } = require('../../models');
+// import the authguard function
+const withAuth = require('../../utils/auth');
+
 
 router.get('/', (req, res) => {
     Comment.findAll({
@@ -12,7 +15,7 @@ router.get('/', (req, res) => {
 
 });
 
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // check the session
     // ensures that only logged-in users interact with the database
     if (req.session) {
@@ -30,7 +33,7 @@ router.post('/', (req, res) => {
     }
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     Comment.destroy({
         where: {
             id: req.params.id

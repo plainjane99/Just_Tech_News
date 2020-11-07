@@ -2,6 +2,8 @@
 const router = require('express').Router();
 const { Post, User, Vote, Comment } = require('../../models');
 const sequelize = require('../../config/connection');
+// import the authguard function
+const withAuth = require('../../utils/auth');
 
 // create a route that will retrieve all posts in the database
 // get all users
@@ -84,14 +86,15 @@ router.get('/:id', (req, res) => {
 });
 
 // create a post
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // expects {title: 'Taskmaster goes public!', post_url: 'https://taskmaster.com/press', user_id: 1}
     Post.create({
         // use req.body to populate the columns in the post table
         // assign these values to the req.body object that was in the request from the user
         title: req.body.title,
         post_url: req.body.post_url,
-        user_id: req.body.user_id
+        // user_id: req.body.user_id,
+        user_id: req.session.user_id
     })
         .then(dbPostData => res.json(dbPostData))
         .catch(err => {
@@ -139,7 +142,7 @@ router.post('/', (req, res) => {
 //     })
 // });
 // use sequelize's model methods to replace busy code (see above)
-router.put('/upvote', (req, res) => {
+router.put('/upvote', withAuth, (req, res) => {
     // make sure the session exists first
     if (req.session) {
         // pass session id along with all destructured properties on req.body
@@ -157,7 +160,7 @@ router.put('/upvote', (req, res) => {
 
 // update an existing entry
 // first retrieve the post instance by id then alter the value of the title
-router.put('/:id', (req, res) => {
+router.put('/:id', withAuth, (req, res) => {
     Post.update(
         {
             // use req.body.title value to replace the title of the post
@@ -186,7 +189,7 @@ router.put('/:id', (req, res) => {
 });
 
 // delete a post
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     Post.destroy({
         // find using unique id in the query parameter
         where: {
